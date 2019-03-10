@@ -3,7 +3,8 @@
 #include <sys/time.h>
 #include <time.h>
 #include <pthread.h>
-
+#include <semaphore.h>
+#include <zconf.h>
 int galton(void){
     int sum = 0;
     for (int i = 0; i < 19 ; i++) {
@@ -11,13 +12,15 @@ int galton(void){
     }
     return sum;
 }
-
-void *cell(void*);
+pthread_rwlock_t  rwlock = PTHREAD_RWLOCK_INITIALIZER;
+void *cell();
 int array[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
+pthread_mutex_t mutex_array[20];
 void print_cells(){
+    printf("Cell:  Value\n------------\n");
     for (int i = 0; i < 20 ; i++) {
-        printf("\t%i:\t%i\n",i,array[i]);
+        if (i < 10) printf("   %i:  %i\n",i,array[i]);
+        else printf("  %i:  %i\n",i,array[i]);
     }
 }
 
@@ -30,6 +33,11 @@ int sumOfCells(){
 }
 
 int main () {
+    for(int i = 0; i<20;i++){
+        pthread_mutex_init(&mutex_array[i], NULL);
+    }
+
+    pthread_rwlock_init(&rwlock, NULL);
     pthread_t tids[1000000];
     pthread_attr_t attr;
     pthread_attr_init(&attr);
@@ -39,7 +47,7 @@ int main () {
 
     for(int i=0;i<1000000;i++) {
 
-        decision = pthread_create(&tids[i], &attr , &cell, (void*)&i);
+        decision = pthread_create(&tids[i], &attr , &cell, NULL);
 
         if (decision == 0){
             success++;
@@ -51,15 +59,14 @@ int main () {
     }
 
     print_cells();
-    printf("Success:*****%i****\n", success);
+    printf("Successfully created threads: %i\n", success);
     printf("Sum of values in the cell: %i", sumOfCells());
     return 0;
 }
-pthread_mutex_t mutex;
-void *cell(void* arg){
+void *cell(){
     int index = galton();
-    pthread_mutex_lock(&mutex);
-    //TODO stop just reaching same time same index!
-    array[index]++;
-    pthread_mutex_unlock(&mutex);
+    while (pthread_mutex_trylock(&mutex_array[index])!=0);
+            array[index]++;
+            pthread_mutex_unlock(&mutex_array[index]);
+
 }
