@@ -1,12 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
-#include <time.h>
 #include <pthread.h>
-#include <semaphore.h>
-#include <zconf.h>
 
-int galton(void) {
+int galton(void) {//gets galton's cell
     int sum = 0;
     for (int i = 0; i < 19; i++) {
         sum += rand() % 2;
@@ -14,14 +10,12 @@ int galton(void) {
     return sum;
 }
 
-pthread_rwlock_t rwlock = PTHREAD_RWLOCK_INITIALIZER;
-
 void *cell();
 
-int array[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-pthread_mutex_t mutex_array[20];
+int array[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};//galton cells
+pthread_mutex_t mutex_array[20];// mutex for every cell
 
-void print_cells() {
+void print_cells() {//prints galton cells
     printf("Cell:  Value\n------------\n");
     for (int i = 0; i < 20; i++) {
         if (i < 10) printf("   %i:  %i\n", i, array[i]);
@@ -29,7 +23,7 @@ void print_cells() {
     }
 }
 
-int sumOfCells() {
+int sumOfCells() {//gets sum of galton cells
     int sum = 0;
     for (int i = 0; i < 20; i++) {
         sum += array[i];
@@ -38,28 +32,27 @@ int sumOfCells() {
 }
 
 int main() {
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 20; i++) {//initilazes mutexes
         pthread_mutex_init(&mutex_array[i], NULL);
     }
-
-    pthread_rwlock_init(&rwlock, NULL);
-    pthread_t tids[1000000];
+    int threads = 1000000;//number of threads
+    pthread_t tids[threads];
     pthread_attr_t attr;
     pthread_attr_init(&attr);
     int decision;
     int success = 0;
     srand(time(0));
 
-    for (int i = 0; i < 1000000; i++) {
+    for (int i = 0; i < threads; i++) { // creates 1M threads
 
         decision = pthread_create(&tids[i], &attr, &cell, NULL);
 
         if (decision == 0) {
-            success++;
+            success++;//number of created successfully threads
         }
     }
 
-    for (int j = 0; j < success; j++) {
+    for (int j = 0; j < success; j++) {//end of created threads
         pthread_join(tids[j], NULL);
     }
 
@@ -71,7 +64,7 @@ int main() {
 
 void *cell() {
     int index = galton();
-    while (pthread_mutex_trylock(&mutex_array[index]) != 0);
+    while (pthread_mutex_trylock(&mutex_array[index]) != 0);//blocks process same index
     array[index]++;
     pthread_mutex_unlock(&mutex_array[index]);
 
