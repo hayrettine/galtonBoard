@@ -15,7 +15,7 @@ void *cell();
 int array[20] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};//galtonBoard cells
 pthread_mutex_t mutex_array[20];// mutex for every cell
 
-void print_cells() {//prints galtonBoard boards cells
+void print_cells() {//prints galtonBoard's cells
     printf("Cell:  Value\n------------\n");
     for (int i = 0; i < 20; i++) {
         if (i < 10) printf("   %i:  %i\n", i, array[i]);
@@ -23,7 +23,7 @@ void print_cells() {//prints galtonBoard boards cells
     }
 }
 
-int sumOfCells() {//gets sum of galtonBoard board cells
+int sumOfCells() {//gets sum of galtonBoard cells
     int sum = 0;
     for (int i = 0; i < 20; i++) {
         sum += array[i];
@@ -59,15 +59,8 @@ int main() {
 
     print_cells();
     printf("Successfully created threads: %i\n", success);
-    printf("Sum of values in the cell: %i\n", sumOfCells());
-    printf("COMMENT\n");
-    printf("\tI chose 0 for left side, and 1 for right side. When red ball arrives to green balls, red ball chooses a random number. After red ball passes all green balls, the red ball\n"
-           "adds every choice to itself as sum value. The sum value gives us red ball's cell's index. In code, I wrote a galtonBoard method that returns an integer value, also\n"
-           "creates an array which has 20 sizes, besides creates a mutex array which is has 20 sizes. In main method, I created 1 million threads after that I checked how many\n"
-           "threads are created successfully. Cell method is called with threads, and is called galtonBoard method too. GaltonBoard method's that is inside the cell method\n"
-           "returns a value to inside index variable. Subsequently, the method calls try_lock function in a while loop. If the function doesn't return zero, it means there is an\n"
-           "another thread that does process inside the index. So the thread waits in while loop, until other thread finishes own job. After all these, all threads are finished with\n"
-           "join function to prints cells, created successful threads and sum of index values.");
+    printf("Sum of values in the cell: %i\n\n\n", sumOfCells());
+
     return 0;
 }
 
