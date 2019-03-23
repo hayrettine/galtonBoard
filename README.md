@@ -6,6 +6,6 @@
 
 ## Usage
 ```
-* gcc main.c -pthread
-* ./a.out
+gcc main.c -pthread
+./a.out
 ```
