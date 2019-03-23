@@ -1,6 +1,6 @@
 #Galton Board
 
-![Alt text](Screenshot from 2019-03-23 18-55-13.png?raw=true "Title")
+![Alt text](https://github.com/hayrettine/galtonBoard/blob/master/Screenshot%20from%202019-03-23%2018-55-13.png "img1")
 
 * It creates 1 million threads if your OS supports and places in cells randomly.
 
